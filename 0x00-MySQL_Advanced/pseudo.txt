@@ -1,0 +1,5 @@
+if remaning > len(copied):
+    copy_all
+    paste
+else:
+    paste
