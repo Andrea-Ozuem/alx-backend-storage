@@ -9,7 +9,7 @@ input data in Redis using the random key and return the key.
 '''
 
 import redis
-import uuid import uuid4
+from uuid import uuid4
 from typing import Union
 
 
