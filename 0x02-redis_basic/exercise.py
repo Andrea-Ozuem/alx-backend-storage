@@ -6,11 +6,10 @@ import redis
 from typing import Union
 
 
-class Cache():
+class Cache:
     '''Cache class'''
-
-    def __init__(self):
-        '''Init'''
+    def __init__(self) -> None:
+        '''constructor for Cache Class'''
         self._redis = redis.Redis()
         self._redis.flushdb()
 
