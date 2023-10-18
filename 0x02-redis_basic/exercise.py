@@ -10,7 +10,7 @@ input data in Redis using the random key and return the key.
 
 import redis
 from uuid import uuid4
-from typing import Union
+from typing import Callable, Union, Optional, Any
 
 
 class Cache:
@@ -26,3 +26,20 @@ class Cache:
         key: str = str(uuid4())
         self._redis.set(key, data)
         return key
+
+    def get(self, key: str, fn: Optional[Callable] = None) -> Any:
+        '''take a key string argument and an optional Callable argument named
+        fn. This callable will be used to convert the data back to the desired
+        format'''
+        val_byte = self._redis.get(key)
+        if fn:
+            return fn(val_byte)
+        return val_byte
+
+    def get_int(self, val: bytes) -> int:
+        '''Callable that returns int rep of a byte'''
+        return int(val)
+
+    def get_str(self, val: bytes) -> str:
+        '''Returns str rep of key'''
+        return val.decode('utf-8')
