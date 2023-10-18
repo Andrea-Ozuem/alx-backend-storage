@@ -11,7 +11,30 @@ input data in Redis using the random key and return the key.
 from functools import wraps
 import redis
 from uuid import uuid4
-from typing import Callable, Union, Optional, Any
+from typing import Callable, Union, Optional, Any, List, Awaitable
+
+
+def replay(fn: Callable) -> None:
+    '''display the history of calls of a particular function'''
+    r = redis.Redis()
+    output = r.lrange("{}:outputs".format(fn.__qualname__), 0, -1)
+    outputs = [out.decode('utf-8') for out in output]
+
+    inputs = r.lrange("{}:inputs".format(fn.__qualname__), 0, -1)
+    vals = []
+    for val in inputs:
+        try:
+            vals.append(val.decode('utf-8'))
+        except UnicodeDecodeError:
+            try:
+                vals.append(int(val))
+            except ValueError:
+                vals.append(val)
+
+    print('{} was called {} times'.format(fn.__qualname__, len(outputs)))
+    result = zip(vals, outputs)
+    for res in result:
+        print('{}(*{}) -> {}'.format(fn.__qualname__, res[0], res[1]))
 
 
 def count_calls(method: Callable) -> Callable:
